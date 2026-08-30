@@ -1,7 +1,7 @@
 // ===== 站点信息：改这里 =====
-export const SITE_TITLE = '我的数学博客';
-export const SITE_DESCRIPTION = '记录数学学习、思考与笔记。';
-export const AUTHOR = '你的名字';
+export const SITE_TITLE = "Sze's Math Blog";
+export const SITE_DESCRIPTION = '记录数学与生活';
+export const AUTHOR = '史家豪SzeChiaHao';
 
 // ===== 栏目（顶部导航的分类）：改这里 =====
 // 文章 frontmatter 的 tags 里含有某个栏目名，就会自动归到该栏目。
