@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import { SITE_TITLE, SITE_DESCRIPTION, AUTHOR } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+const pageDesc = description ?? SITE_DESCRIPTION;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={pageDesc} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      // 在首帧渲染前就确定主题，避免闪烁（FOUC）
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch (e) {}
+        var theme =
+          saved ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="site-logo" href="/">{SITE_TITLE}</a>
+        <nav class="site-nav">
+          <a href="/">首页</a>
+          <a href="/about/">关于</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换明暗主题">
+            🌓
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <span>© {new Date().getFullYear()} {AUTHOR}</span>
+        <a href="/rss.xml">RSS 订阅</a>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.getElementById('themeToggle');
+      toggle?.addEventListener('click', () => {
+        const cur = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = cur;
+        try {
+          localStorage.setItem('theme', cur);
+        } catch (e) {}
+        // 通知评论组件等同步主题
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: cur } }));
+      });
+    </script>
+  </body>
+</html>

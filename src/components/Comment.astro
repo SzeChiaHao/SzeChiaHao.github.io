@@ -1,0 +1,55 @@
+---
+import { GISCUS } from '../consts';
+
+const configJson = JSON.stringify(GISCUS).replace(/</g, '\\u003c');
+---
+
+<div class="comments" id="comments"></div>
+
+<script>
+  const config = {configJson};
+
+  function loadGiscus(theme) {
+    const el = document.getElementById('comments');
+    el.innerHTML = '';
+    const s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', config.repo);
+    s.setAttribute('data-repo-id', config.repoId);
+    s.setAttribute('data-category', config.category);
+    s.setAttribute('data-category-id', config.categoryId);
+    s.setAttribute('data-mapping', 'pathname');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', theme);
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('data-loading', 'lazy');
+    s.crossOrigin = 'anonymous';
+    s.async = true;
+    el.appendChild(s);
+  }
+
+  const ready = Boolean(config.repo && config.repoId && config.categoryId);
+
+  if (!ready) {
+    document.getElementById('comments').innerHTML =
+      '<p class="comments-placeholder">评论功能未配置：按 README 中的「评论系统」一节填写 Giscus 配置即可启用。</p>';
+  } else {
+    const initial = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+    loadGiscus(initial);
+
+    // 站点主题切换时，同步 giscus 主题
+    window.addEventListener('themechange', (e) => {
+      const theme = e.detail && e.detail.theme ? e.detail.theme : 'light';
+      const frame = document.querySelector('iframe.giscus-frame');
+      if (frame && frame.contentWindow) {
+        frame.contentWindow.postMessage(
+          { giscus: { setConfig: { theme } } },
+          'https://giscus.app',
+        );
+      }
+    });
+  }
+</script>

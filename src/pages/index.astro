@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('posts')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Base>
+  <section class="hero">
+    <h1 class="site-title">{SITE_TITLE}</h1>
+    <p class="site-subtitle">{SITE_DESCRIPTION}</p>
+  </section>
+
+  <ul class="post-list">
+    {
+      posts.map((post) => (
+        <li class="post-item">
+          <a href={`/posts/${post.id}/`}>
+            <h2 class="post-item-title">{post.data.title}</h2>
+            {post.data.description && <p class="post-item-desc">{post.data.description}</p>}
+            <div class="post-item-meta">
+              <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+              {post.data.tags && post.data.tags.length > 0 && (
+                <span>{post.data.tags.map((t) => `#${t}`).join(' ')}</span>
+              )}
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
