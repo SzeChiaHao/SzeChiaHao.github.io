@@ -1,23 +1,21 @@
 ---
 import { GISCUS } from '../consts';
 
-const configJson = JSON.stringify(GISCUS).replace(/</g, '\\u003c');
+const { repo, repoId, category, categoryId } = GISCUS;
 ---
 
 <div class="comments" id="comments"></div>
 
-<script>
-  const config = {configJson};
-
+<script define:vars={{ repo, repoId, category, categoryId }}>
   function loadGiscus(theme) {
     const el = document.getElementById('comments');
     el.innerHTML = '';
     const s = document.createElement('script');
     s.src = 'https://giscus.app/client.js';
-    s.setAttribute('data-repo', config.repo);
-    s.setAttribute('data-repo-id', config.repoId);
-    s.setAttribute('data-category', config.category);
-    s.setAttribute('data-category-id', config.categoryId);
+    s.setAttribute('data-repo', repo);
+    s.setAttribute('data-repo-id', repoId);
+    s.setAttribute('data-category', category);
+    s.setAttribute('data-category-id', categoryId);
     s.setAttribute('data-mapping', 'pathname');
     s.setAttribute('data-strict', '0');
     s.setAttribute('data-reactions-enabled', '1');
@@ -31,7 +29,7 @@ const configJson = JSON.stringify(GISCUS).replace(/</g, '\\u003c');
     el.appendChild(s);
   }
 
-  const ready = Boolean(config.repo && config.repoId && config.categoryId);
+  const ready = Boolean(repo && repoId && categoryId);
 
   if (!ready) {
     document.getElementById('comments').innerHTML =
