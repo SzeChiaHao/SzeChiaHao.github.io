@@ -9,6 +9,6 @@ export const AUTHOR = '你的名字';
 export const GISCUS = {
   repo: 'SzeChiaHao/SzeChiaHao.github.io',
   repoId: 'R_kgDOUIrv9w',
-  category: '', // 待填：在 giscus.app 的「Discussion Category」下拉框里选的那个分类名
-  categoryId: '', // 待填：形如 'DIC_kwDOxxxxx'
+  category: 'Announcements',
+  categoryId: 'DIC_kwDOUIrv984DEgL4',
 };
