@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { CATEGORIES } from '../../consts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  // 所有栏目（即使暂时没文章也生成页面）+ 所有实际用到的 tag
+  const tags = new Set([...CATEGORIES, ...posts.flatMap((p) => p.data.tags ?? [])]);
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const posts = (await getCollection('posts'))
+  .filter((p) => (p.data.tags ?? []).includes(tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title={`标签：${tag}`}>
+  <section class="hero">
+    <h1 class="site-title">#{tag}</h1>
+    <p class="site-subtitle">共 {posts.length} 篇文章</p>
+  </section>
+  {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">这个栏目还没有文章。</p>}
+</Base>
