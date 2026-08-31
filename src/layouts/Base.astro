@@ -211,7 +211,8 @@ const pageDesc = description ?? SITE_DESCRIPTION;
 
         function loadPagefind() {
           if (!pagefindPromise) {
-            pagefindPromise = import(/* @vite-ignore */ '/pagefind/pagefind.js')
+            var pfUrl = '/pagefind/pagefind.js';
+            pagefindPromise = import(pfUrl)
               .then(function (m) { return m; })
               .catch(function () { return null; });
           }

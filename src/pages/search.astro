@@ -98,7 +98,8 @@ const title = '搜索';
     }
 
     function loadAll(q) {
-      import(/* @vite-ignore */ '/pagefind/pagefind.js')
+      var pfUrl = '/pagefind/pagefind.js';
+      import(pfUrl)
         .then(function (m) { return m.search(q); })
         .then(function (search) { return search.results; })
         .then(function (results) {
@@ -114,6 +115,11 @@ const title = '搜索';
         })
         .then(function (datas) {
           allResults = datas;
+          currentPage = 1;
+          render();
+        })
+        .catch(function () {
+          allResults = [];
           currentPage = 1;
           render();
         });
