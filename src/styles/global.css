@@ -896,27 +896,23 @@ a:hover {
 .landing-logo {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.landing-title-img {
+  height: 4.2rem;
+  width: auto;
+  display: block;
 }
 
 .landing-avatar {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-}
-
-.landing-title {
-  font-size: clamp(2.2rem, 5.5vw, 3.6rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  background: linear-gradient(120deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .landing-main {
@@ -924,13 +920,16 @@ a:hover {
   display: grid;
   grid-template-columns: 38.2fr 61.8fr;
   gap: 3rem;
-  align-items: center;
+  align-items: stretch;
   padding: 2rem 0;
 }
 
 .landing-col-left {
   border-left: 4px solid var(--accent);
   padding-left: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .landing-info {
@@ -965,18 +964,20 @@ a:hover {
 }
 
 .landing-col-right {
+  border-left: 4px solid var(--accent);
+  padding-left: 1.8rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 2.5rem;
+  justify-content: space-between;
 }
 
 .landing-about {
-  padding: 0.8rem 1.8rem;
+  align-self: flex-start;
+  padding: 0.9rem 1.6rem;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   border: 1px solid var(--glass-border);
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--text);
   font-size: 1.1rem;
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
@@ -992,6 +993,7 @@ a:hover {
 .landing-update {
   width: 100%;
   max-width: 30rem;
+  align-self: flex-start;
 }
 
 .landing-update-title {
