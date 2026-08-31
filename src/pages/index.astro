@@ -11,14 +11,17 @@ const latest = posts.slice(0, 3);
 <Landing>
   <div class="landing">
     <header class="landing-logo">
-      <img src="/avatar.png" alt="头像" class="landing-avatar" />
       <span class="landing-title">Sze's Math Blog</span>
+      <img src="/avatar.png" alt="头像" class="landing-avatar" />
     </header>
 
     <div class="landing-main">
       <div class="landing-col landing-col-left">
         <div class="landing-info">
-          <div class="info-item info-clock" id="infoClock">--:--:--</div>
+          <div class="info-clock">
+            <span class="clock-time" id="clockTime">--:--:--</span>
+            <span class="clock-date" id="clockDate"></span>
+          </div>
           <div class="info-item" id="infoLocation">定位中…</div>
           <div class="info-item" id="infoWeather">获取天气中…</div>
         </div>
@@ -53,19 +56,19 @@ const latest = posts.slice(0, 3);
 </Landing>
 
 <script>
-  // 首页互动区：当地时间 / 地址 / 天气
+  // 首页互动区：当地时间（大号）/ 地址 / 天气
   (function () {
-    var clockEl = document.getElementById('infoClock');
+    var timeEl = document.getElementById('clockTime');
+    var dateEl = document.getElementById('clockDate');
     function tick() {
       var now = new Date();
-      var date = now.toLocaleDateString('zh-CN', {
+      timeEl.textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+      dateEl.textContent = now.toLocaleDateString('zh-CN', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         weekday: 'long',
       });
-      var time = now.toLocaleTimeString('zh-CN', { hour12: false });
-      clockEl.textContent = date + ' ' + time;
     }
     tick();
     setInterval(tick, 1000);
