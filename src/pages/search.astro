@@ -1,0 +1,148 @@
+---
+import Base from '../layouts/Base.astro';
+
+const title = '搜索';
+---
+
+<Base title={title}>
+  <div class="search-page">
+    <h1 class="site-title">搜索</h1>
+    <div class="search-page-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="pageSearchInput" placeholder="输入关键词搜索文章…" autocomplete="off" spellcheck="false" aria-label="搜索文章" />
+    </div>
+    <div id="searchSummary" class="search-summary"></div>
+    <div id="searchResults" class="search-results"></div>
+    <div id="searchPagination" class="search-pagination"></div>
+  </div>
+</Base>
+
+<script>
+  (function () {
+    var input = document.getElementById('pageSearchInput');
+    var summaryBox = document.getElementById('searchSummary');
+    var resultsBox = document.getElementById('searchResults');
+    var paginationBox = document.getElementById('searchPagination');
+
+    var PAGE_SIZE = 10;
+    var allResults = [];
+    var currentPage = 1;
+
+    var initialQ = new URLSearchParams(location.search).get('q') || '';
+    if (initialQ) input.value = initialQ;
+
+    function render() {
+      var total = allResults.length;
+      var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      if (currentPage > pages) currentPage = pages;
+      var start = (currentPage - 1) * PAGE_SIZE;
+      var pageItems = allResults.slice(start, start + PAGE_SIZE);
+
+      if (!total) {
+        summaryBox.textContent = '';
+        resultsBox.innerHTML = '<div class="search-empty">未找到相关文章</div>';
+        paginationBox.innerHTML = '';
+        return;
+      }
+
+      summaryBox.textContent = '共 ' + total + ' 篇相关文章';
+      resultsBox.innerHTML = '';
+      pageItems.forEach(function (d) {
+        var item = document.createElement('a');
+        item.className = 'search-result-item';
+        item.href = d.url;
+        var title = document.createElement('div');
+        title.className = 'search-result-title';
+        title.textContent = d.title;
+        var excerpt = document.createElement('div');
+        excerpt.className = 'search-result-excerpt';
+        excerpt.innerHTML = d.excerpt || '';
+        item.appendChild(title);
+        item.appendChild(excerpt);
+        resultsBox.appendChild(item);
+      });
+
+      paginationBox.innerHTML = '';
+      if (pages > 1) {
+        var prev = document.createElement('button');
+        prev.textContent = '上一页';
+        prev.disabled = currentPage === 1;
+        prev.addEventListener('click', function () { goTo(currentPage - 1); });
+        paginationBox.appendChild(prev);
+
+        for (var p = 1; p <= pages; p++) {
+          (function (pg) {
+            var btn = document.createElement('button');
+            btn.textContent = pg;
+            btn.classList.toggle('active', pg === currentPage);
+            btn.addEventListener('click', function () { goTo(pg); });
+            paginationBox.appendChild(btn);
+          })(p);
+        }
+
+        var next = document.createElement('button');
+        next.textContent = '下一页';
+        next.disabled = currentPage === pages;
+        next.addEventListener('click', function () { goTo(currentPage + 1); });
+        paginationBox.appendChild(next);
+      }
+    }
+
+    function goTo(p) {
+      currentPage = p;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function loadAll(q) {
+      import(/* @vite-ignore */ '/pagefind/pagefind.js')
+        .then(function (m) { return m.search(q); })
+        .then(function (search) { return search.results; })
+        .then(function (results) {
+          return Promise.all(results.map(function (r) {
+            return r.data().then(function (d) {
+              return {
+                url: d.url,
+                title: (d.meta && d.meta.title) || d.url,
+                excerpt: d.excerpt || ''
+              };
+            });
+          }));
+        })
+        .then(function (datas) {
+          allResults = datas;
+          currentPage = 1;
+          render();
+        });
+    }
+
+    if (initialQ) loadAll(initialQ);
+
+    function submit() {
+      var v = input.value.trim();
+      if (v) {
+        history.replaceState(null, '', '/search/?q=' + encodeURIComponent(v));
+        loadAll(v);
+      }
+    }
+
+    input.addEventListener('input', function () {
+      var v = input.value.trim();
+      if (v) {
+        history.replaceState(null, '', '/search/?q=' + encodeURIComponent(v));
+        loadAll(v);
+      } else {
+        allResults = [];
+        currentPage = 1;
+        render();
+      }
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') submit();
+    });
+  })();
+</script>

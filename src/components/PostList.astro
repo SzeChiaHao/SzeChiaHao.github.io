@@ -10,7 +10,7 @@ const fmt = (d: Date) =>
   d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
-<ul class="post-list">
+<ul class="post-list" data-pagefind-ignore>
   {
     posts.map((post) => (
       <li class="post-item">

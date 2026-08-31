@@ -21,7 +21,7 @@ const posts = (await getCollection('posts'))
 ---
 
 <Base title={`标签：${tag}`}>
-  <section class="hero">
+  <section class="hero" data-pagefind-ignore>
     <h1 class="site-title">#{tag}</h1>
     <p class="site-subtitle">共 {posts.length} 篇文章</p>
   </section>

@@ -682,3 +682,204 @@ a:hover {
   overflow-y: hidden;
   padding: 0.25em 0;
 }
+
+/* ============ 搜索下拉面板 ============ */
+.search-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 20rem;
+  max-width: 90vw;
+  max-height: 24rem;
+  overflow-y: auto;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: 0.5rem;
+  opacity: 0;
+  transform: translateY(-0.25rem);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.search-panel.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.search-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-panel-item a {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-panel-item a:hover,
+.search-panel-item.active a {
+  background: var(--accent-soft);
+}
+
+.search-panel-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.search-panel-meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-panel-empty {
+  padding: 0.8rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+/* ============ 搜索结果页 ============ */
+.search-page {
+  padding: 3rem 0 4rem;
+}
+
+.search-page-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0 2rem;
+}
+
+.search-page-box .search-icon {
+  position: absolute;
+  left: 0.9rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-page-box input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-page-box input::placeholder {
+  color: var(--muted);
+}
+
+.search-page-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.search-summary {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.search-result-item {
+  display: block;
+  padding: 1.1rem 1.25rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.search-result-item:hover {
+  text-decoration: none;
+  border-color: var(--muted);
+  box-shadow: var(--glass-shadow);
+  transform: translateY(-1px);
+}
+
+.search-result-title {
+  font-size: 1.1rem;
+  font-weight: 650;
+  margin-bottom: 0.3rem;
+}
+
+.search-result-excerpt {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.search-result-excerpt mark {
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0 0.15em;
+  border-radius: 3px;
+}
+
+.search-empty {
+  padding: 2.5rem 1rem;
+  color: var(--muted);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.search-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.search-pagination button {
+  min-width: 2.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.search-pagination button:hover:not(:disabled) {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.search-pagination button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.search-pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

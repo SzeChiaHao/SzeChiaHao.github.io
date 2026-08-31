@@ -51,7 +51,7 @@ const pageDesc = description ?? SITE_DESCRIPTION;
     </script>
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" data-pagefind-ignore>
       <div class="container">
         <div class="header-left">
           <button class="icon-btn" id="settingsBtn" type="button" aria-label="设置" title="设置">
@@ -75,11 +75,12 @@ const pageDesc = description ?? SITE_DESCRIPTION;
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
           <input type="search" id="searchInput" placeholder="搜索文章…" autocomplete="off" spellcheck="false" aria-label="搜索文章" />
+          <div class="search-panel" id="searchPanel"></div>
         </div>
       </div>
     </header>
 
-    <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="页面设置">
+    <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="页面设置" data-pagefind-ignore>
       <div class="settings-panel-title">设置</div>
 
       <div class="setting-group">
@@ -112,7 +113,7 @@ const pageDesc = description ?? SITE_DESCRIPTION;
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-pagefind-ignore>
       <div class="container">
         <span>© {new Date().getFullYear()} {AUTHOR}</span>
         <a href="/rss.xml">RSS 订阅</a>
@@ -200,14 +201,132 @@ const pageDesc = description ?? SITE_DESCRIPTION;
           if (e.key === 'Escape') panel.classList.remove('open');
         });
 
-        // ===== 搜索框：按 / 快速聚焦（搜索功能后续接入）=====
+        // ===== 搜索 =====
         var searchInput = document.getElementById('searchInput');
+        var searchPanel = document.getElementById('searchPanel');
+        var pagefindPromise = null;
+        var searchResults = [];
+        var searchActive = -1;
+        var searchTimer = null;
+
+        function loadPagefind() {
+          if (!pagefindPromise) {
+            pagefindPromise = import(/* @vite-ignore */ '/pagefind/pagefind.js')
+              .then(function (m) { return m; })
+              .catch(function () { return null; });
+          }
+          return pagefindPromise;
+        }
+
+        function openPanel() { searchPanel.classList.add('open'); }
+        function closePanel() { searchPanel.classList.remove('open'); }
+
+        function setSearchActive(i) {
+          searchActive = i;
+          var items = searchPanel.querySelectorAll('.search-panel-item');
+          items.forEach(function (el, idx) { el.classList.toggle('active', idx === i); });
+        }
+
+        function renderSearchResults(list) {
+          searchResults = list;
+          searchActive = -1;
+          searchPanel.innerHTML = '';
+          if (!list.length) {
+            var empty = document.createElement('div');
+            empty.className = 'search-panel-empty';
+            empty.textContent = '未找到相关文章';
+            searchPanel.appendChild(empty);
+            openPanel();
+            return;
+          }
+          var ul = document.createElement('ul');
+          ul.className = 'search-panel-list';
+          list.forEach(function (d) {
+            var li = document.createElement('li');
+            li.className = 'search-panel-item';
+            var a = document.createElement('a');
+            a.href = d.url;
+            var title = document.createElement('div');
+            title.className = 'search-panel-title';
+            title.textContent = d.title;
+            var meta = document.createElement('div');
+            meta.className = 'search-panel-meta';
+            meta.textContent = d.url;
+            a.appendChild(title);
+            a.appendChild(meta);
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+          searchPanel.appendChild(ul);
+          openPanel();
+        }
+
+        function runSearch(q) {
+          loadPagefind().then(function (pagefind) {
+            if (!pagefind) return null;
+            return pagefind.search(q).then(function (search) { return search.results; });
+          }).then(function (results) {
+            if (!results) return null;
+            var top = results.slice(0, 3);
+            return Promise.all(top.map(function (r) {
+              return r.data().then(function (d) {
+                return {
+                  url: d.url,
+                  title: (d.meta && d.meta.title) || d.url,
+                  excerpt: d.excerpt || ''
+                };
+              });
+            }));
+          }).then(function (datas) {
+            if (datas) renderSearchResults(datas);
+          });
+        }
+
+        // 按 / 快速聚焦搜索框
         document.addEventListener('keydown', function (e) {
           if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
           var tag = document.activeElement && document.activeElement.tagName;
           if (tag === 'INPUT' || tag === 'TEXTAREA') return;
           e.preventDefault();
           searchInput.focus();
+        });
+
+        searchInput.addEventListener('input', function () {
+          clearTimeout(searchTimer);
+          var q = searchInput.value.trim();
+          if (!q) { closePanel(); return; }
+          searchTimer = setTimeout(function () { runSearch(q); }, 150);
+        });
+
+        searchInput.addEventListener('focus', function () {
+          var q = searchInput.value.trim();
+          if (q) runSearch(q);
+        });
+
+        searchInput.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (searchResults.length) setSearchActive((searchActive + 1) % searchResults.length);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (searchResults.length) setSearchActive((searchActive - 1 + searchResults.length) % searchResults.length);
+          } else if (e.key === 'Enter') {
+            var q = searchInput.value.trim();
+            if (searchActive >= 0 && searchResults[searchActive]) {
+              e.preventDefault();
+              window.location.href = searchResults[searchActive].url;
+            } else if (q) {
+              window.location.href = '/search/?q=' + encodeURIComponent(q);
+            }
+          } else if (e.key === 'Escape') {
+            closePanel();
+          }
+        });
+
+        document.addEventListener('click', function (e) {
+          if (e.target !== searchInput && !searchPanel.contains(e.target)) {
+            closePanel();
+          }
         });
       })();
     </script>
