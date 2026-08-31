@@ -26,6 +26,26 @@ const pageDesc = description ?? SITE_DESCRIPTION;
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
+    <style is:inline>
+      /* 全屏加载遮罩：双扇门滑出（首帧内联，避免闪烁） */
+      #loader-wrapper{position:fixed;inset:0;z-index:99999;overflow:hidden}
+      #loader-wrapper .loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+      #loader-wrapper .loader-circle{position:relative;width:150px;height:150px;border-radius:50%;border:3px solid transparent;border-top-color:#818cf8;animation:lspin 1.8s linear infinite;z-index:2}
+      #loader-wrapper .loader-circle::before{content:"";position:absolute;inset:5px;border-radius:50%;border:3px solid transparent;border-top-color:#a78bfa;animation:lspin-r .6s linear infinite}
+      #loader-wrapper .loader-circle::after{content:"";position:absolute;inset:15px;border-radius:50%;border:3px solid transparent;border-top-color:#6366f1;animation:lspin 1s linear infinite}
+      #loader-wrapper .loader-text{display:flex;flex-direction:column;align-items:center;color:#e7e7ea;z-index:2;margin-top:40px;font-size:22px;letter-spacing:.02em}
+      #loader-wrapper .loader-text .tip{margin-top:8px;font-size:16px;opacity:.6}
+      #loader-wrapper .loader-section{position:fixed;top:0;width:51%;height:100%;background:#1a1b25;z-index:1}
+      #loader-wrapper .loader-section.section-left{left:0}
+      #loader-wrapper .loader-section.section-right{right:0}
+      #loader-wrapper.loaded{visibility:hidden;transform:translateY(-100%);transition:transform .4s .9s ease-out,visibility .4s .9s ease-out}
+      #loader-wrapper.loaded .loader-circle,#loader-wrapper.loaded .loader-text{opacity:0;transition:opacity .3s ease-out}
+      #loader-wrapper.loaded .loader-section.section-left{transform:translate(-100%);transition:transform .5s .25s cubic-bezier(.645,.045,.355,1)}
+      #loader-wrapper.loaded .loader-section.section-right{transform:translate(100%);transition:transform .5s .25s cubic-bezier(.645,.045,.355,1)}
+      @keyframes lspin{to{transform:rotate(360deg)}}
+      @keyframes lspin-r{to{transform:rotate(-360deg)}}
+      @media (prefers-reduced-motion:reduce){#loader-wrapper{display:none}}
+    </style>
     <script is:inline>
       // 首帧前确定主题与磨砂玻璃参数，避免闪烁
       (function () {
@@ -51,6 +71,39 @@ const pageDesc = description ?? SITE_DESCRIPTION;
     </script>
   </head>
   <body>
+    <div id="loader-wrapper">
+      <div class="loader">
+        <div class="loader-circle"></div>
+        <div class="loader-text">
+          <span class="name">{SITE_TITLE}</span>
+          <span class="tip">加载中…</span>
+        </div>
+      </div>
+      <div class="loader-section section-left"></div>
+      <div class="loader-section section-right"></div>
+    </div>
+    <script is:inline>
+      // 页面就绪后滑开加载遮罩
+      (function () {
+        var loader = document.getElementById('loader-wrapper');
+        if (!loader) return;
+        var start = Date.now();
+        var MIN = 700;
+        var done = false;
+        function hide() {
+          if (done) return;
+          done = true;
+          var wait = Math.max(0, MIN - (Date.now() - start));
+          setTimeout(function () { loader.classList.add('loaded'); }, wait);
+        }
+        if (document.readyState === 'complete') {
+          hide();
+        } else {
+          window.addEventListener('load', hide);
+        }
+        setTimeout(hide, 4000);
+      })();
+    </script>
     <header class="site-header" data-pagefind-ignore>
       <div class="container">
         <div class="header-left">
