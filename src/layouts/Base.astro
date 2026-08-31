@@ -12,6 +12,7 @@ interface Props {
 const { title, description, wide = false } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 const pageDesc = description ?? SITE_DESCRIPTION;
+const isHome = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
@@ -71,39 +72,45 @@ const pageDesc = description ?? SITE_DESCRIPTION;
     </script>
   </head>
   <body>
-    <div id="loader-wrapper">
-      <div class="loader">
-        <div class="loader-circle"></div>
-        <div class="loader-text">
-          <span class="name">{SITE_TITLE}</span>
-          <span class="tip">加载中…</span>
-        </div>
-      </div>
-      <div class="loader-section section-left"></div>
-      <div class="loader-section section-right"></div>
-    </div>
-    <script is:inline>
-      // 页面就绪后滑开加载遮罩
-      (function () {
-        var loader = document.getElementById('loader-wrapper');
-        if (!loader) return;
-        var start = Date.now();
-        var MIN = 700;
-        var done = false;
-        function hide() {
-          if (done) return;
-          done = true;
-          var wait = Math.max(0, MIN - (Date.now() - start));
-          setTimeout(function () { loader.classList.add('loaded'); }, wait);
-        }
-        if (document.readyState === 'complete') {
-          hide();
-        } else {
-          window.addEventListener('load', hide);
-        }
-        setTimeout(hide, 4000);
-      })();
-    </script>
+    {
+      isHome && (
+        <>
+          <div id="loader-wrapper">
+            <div class="loader">
+              <div class="loader-circle"></div>
+              <div class="loader-text">
+                <span class="name">{SITE_TITLE}</span>
+                <span class="tip">加载中…</span>
+              </div>
+            </div>
+            <div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+          </div>
+          <script is:inline>
+            // 页面就绪后滑开加载遮罩（仅首页）
+            (function () {
+              var loader = document.getElementById('loader-wrapper');
+              if (!loader) return;
+              var start = Date.now();
+              var MIN = 700;
+              var done = false;
+              function hide() {
+                if (done) return;
+                done = true;
+                var wait = Math.max(0, MIN - (Date.now() - start));
+                setTimeout(function () { loader.classList.add('loaded'); }, wait);
+              }
+              if (document.readyState === 'complete') {
+                hide();
+              } else {
+                window.addEventListener('load', hide);
+              }
+              setTimeout(hide, 4000);
+            })();
+          </script>
+        </>
+      )
+    }
     <header class="site-header" data-pagefind-ignore>
       <div class="container">
         <div class="header-left">
