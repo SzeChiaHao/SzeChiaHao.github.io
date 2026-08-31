@@ -51,18 +51,34 @@ const rt = readingTime(post.body);
 
   {
     toc.length > 0 && (
-      <aside class="toc-sidebar">
-        <div class="toc-title">目录</div>
-        <nav class="toc-nav" aria-label="文章目录">
-          <ul>
-            {toc.map((h) => (
-              <li class={`depth-${h.depth}`}>
-                <a href={`#${h.slug}`}>{h.text}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
+      <>
+        <button class="toc-toggle" id="tocToggle" type="button" aria-label="打开目录">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+        <div class="toc-backdrop" id="tocBackdrop"></div>
+        <aside class="toc-sidebar" id="tocSidebar">
+          <div class="toc-title">
+            <span>目录</span>
+            <button class="toc-close" id="tocClose" type="button" aria-label="关闭目录">×</button>
+          </div>
+          <nav class="toc-nav" aria-label="文章目录">
+            <ul>
+              {toc.map((h) => (
+                <li class={`depth-${h.depth}`}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      </>
     )
   }
 </div>
@@ -104,5 +120,32 @@ const rt = readingTime(post.body);
       }
     });
     update();
+  })();
+</script>
+
+<script>
+  // 移动端目录抽屉：开关、点击遮罩/链接/关闭按钮时收起
+  (function () {
+    var toggle = document.getElementById('tocToggle');
+    var sidebar = document.getElementById('tocSidebar');
+    var backdrop = document.getElementById('tocBackdrop');
+    var close = document.getElementById('tocClose');
+    if (!toggle || !sidebar) return;
+    function openToc() {
+      sidebar.classList.add('open');
+      if (backdrop) backdrop.classList.add('open');
+      toggle.classList.add('hidden');
+    }
+    function closeToc() {
+      sidebar.classList.remove('open');
+      if (backdrop) backdrop.classList.remove('open');
+      toggle.classList.remove('hidden');
+    }
+    toggle.addEventListener('click', openToc);
+    if (close) close.addEventListener('click', closeToc);
+    if (backdrop) backdrop.addEventListener('click', closeToc);
+    sidebar.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeToc);
+    });
   })();
 </script>

@@ -207,8 +207,22 @@ a:hover {
   }
   .site-nav {
     grid-area: nav;
-    justify-self: center;
+    justify-self: start;
     width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    gap: 0.25rem 0.5rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .site-nav a {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.7rem;
   }
   .header-search input {
     width: 9.5rem;
@@ -468,6 +482,109 @@ a:hover {
   color: var(--accent);
   border-left-color: var(--accent);
   font-weight: 600;
+}
+
+/* ============ 移动端目录（抽屉） ============ */
+.toc-toggle {
+  display: none;
+}
+
+.toc-toggle.hidden {
+  display: none;
+}
+
+.toc-backdrop {
+  display: none;
+}
+
+.toc-close {
+  display: none;
+}
+
+@media (max-width: 1099px) {
+  .toc-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 1rem;
+    bottom: 1.25rem;
+    z-index: 220;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .toc-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .toc-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .toc-sidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 210;
+    height: 100%;
+    width: min(78vw, 18rem);
+    max-height: none;
+    padding: 1.5rem 1.4rem;
+    background: var(--bg-elevated);
+    border: none;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .toc-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .toc-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .toc-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .toc-close:hover {
+    color: var(--text);
+  }
 }
 
 /* ============ 设置面板 ============ */
@@ -1085,7 +1202,24 @@ a:hover {
 
 @media (max-width: 880px) {
   .landing {
-    padding: 1.5rem 1.5rem 2rem;
+    padding: 1.25rem 1.25rem 2rem;
+  }
+  .landing-top {
+    margin-top: 1rem;
+  }
+  .landing-logo {
+    gap: 0.7rem;
+  }
+  .landing-title-img {
+    height: clamp(2rem, 8.5vw, 4.2rem);
+  }
+  .landing-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .landing-about {
+    font-size: 0.95rem;
+    padding: 0.6rem 1.1rem;
   }
   .landing-main {
     grid-template-columns: 1fr;
@@ -1163,4 +1297,45 @@ a:hover {
 .explore-empty {
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+/* ============ 手机端排版微调 ============ */
+@media (max-width: 640px) {
+  .site-header .container {
+    padding: 0.5rem 1rem;
+  }
+
+  .container,
+  .container-wide {
+    padding: 0 1rem;
+  }
+
+  .hero {
+    padding: 2.5rem 0 1.5rem;
+  }
+
+  .site-title {
+    font-size: 1.9rem;
+  }
+
+  .post {
+    padding: 2rem 0 2.5rem;
+  }
+
+  .post-title {
+    font-size: 1.6rem;
+  }
+
+  .post-meta {
+    font-size: 0.82rem;
+  }
+
+  .prose {
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .prose pre {
+    font-size: 0.82rem;
+  }
 }
