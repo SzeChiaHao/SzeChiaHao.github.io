@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { CATEGORIES } from '../consts';
+
+const posts = (await getCollection('posts')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const PER_TAG = 3;
+---
+
+<Base title="探索">
+  <section class="explore">
+    <h1 class="site-title">探索</h1>
+    <p class="site-subtitle">按栏目浏览所有文章</p>
+
+    {
+      CATEGORIES.map((cat) => {
+        const list = posts.filter((p) => (p.data.tags ?? []).includes(cat)).slice(0, PER_TAG);
+        return (
+          <section class="explore-section">
+            <h2 class="explore-tag">
+              <a href={`/tags/${cat}/`}>#{cat}</a>
+            </h2>
+            {list.length > 0 ? (
+              <ul class="explore-list">
+                {list.map((p) => (
+                  <li class="explore-item">
+                    <a href={`/posts/${p.id}/`}>
+                      <span class="explore-item-title">{p.data.title}</span>
+                      <time class="explore-item-date">
+                        {p.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </time>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="explore-empty">暂无文章</p>
+            )}
+          </section>
+        );
+      })
+    }
+  </section>
+</Base>

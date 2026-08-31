@@ -1,18 +1,127 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../layouts/Base.astro';
-import PostList from '../components/PostList.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Landing from '../layouts/Landing.astro';
 
 const posts = (await getCollection('posts')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
+const latest = posts.slice(0, 3);
 ---
 
-<Base>
-  <section class="hero" data-pagefind-ignore>
-    <h1 class="site-title">{SITE_TITLE}</h1>
-    <p class="site-subtitle">{SITE_DESCRIPTION}</p>
-  </section>
-  <PostList posts={posts} />
-</Base>
+<Landing>
+  <div class="landing">
+    <header class="landing-logo">
+      <img src="/avatar.png" alt="头像" class="landing-avatar" />
+      <span class="landing-title">Sze's Math Blog</span>
+    </header>
+
+    <div class="landing-main">
+      <div class="landing-col landing-col-left">
+        <div class="landing-info">
+          <div class="info-item info-clock" id="infoClock">--:--:--</div>
+          <div class="info-item" id="infoLocation">定位中…</div>
+          <div class="info-item" id="infoWeather">获取天气中…</div>
+        </div>
+      </div>
+
+      <div class="landing-col landing-col-right">
+        <a class="landing-about" href="/about/">关于我</a>
+        <div class="landing-update">
+          <h2 class="landing-update-title">Update</h2>
+          <ul class="landing-update-list">
+            {
+              latest.map((p) => (
+                <li>
+                  <a href={`/posts/${p.id}/`}>
+                    <span class="update-title">{p.data.title}</span>
+                    <time class="update-date">
+                      {p.data.date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
+                    </time>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="landing-explore">
+      <a class="explore-btn" href="/explore/">Explore ↓</a>
+    </div>
+  </div>
+</Landing>
+
+<script>
+  // 首页互动区：当地时间 / 地址 / 天气
+  (function () {
+    var clockEl = document.getElementById('infoClock');
+    function tick() {
+      var now = new Date();
+      var date = now.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      });
+      var time = now.toLocaleTimeString('zh-CN', { hour12: false });
+      clockEl.textContent = date + ' ' + time;
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 地址：IP 定位（ipwho.is，免费无 key、支持 CORS）
+    var locEl = document.getElementById('infoLocation');
+    fetch('https://ipwho.is/?lang=zh')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.success && d.city) {
+          locEl.textContent = [d.city, d.country].filter(Boolean).join(' · ');
+        } else {
+          locEl.textContent = '未知位置';
+        }
+      })
+      .catch(function () { locEl.textContent = '位置获取失败'; });
+
+    // 天气：wttr.in（按访问者 IP 自动定位），英文描述转中文
+    var WEATHER_ZH = {
+      'sunny': '晴',
+      'clear': '晴',
+      'partly cloudy': '多云',
+      'cloudy': '多云',
+      'overcast': '阴',
+      'mist': '薄雾',
+      'fog': '雾',
+      'haze': '霾',
+      'light drizzle': '毛毛雨',
+      'light rain': '小雨',
+      'patchy rain': '局部有雨',
+      'moderate rain': '中雨',
+      'heavy rain': '大雨',
+      'rain': '雨',
+      'light snow': '小雪',
+      'snow': '雪',
+      'thunderstorm': '雷雨',
+      'thundery': '雷雨',
+    };
+    function zhWeather(en) {
+      var key = (en || '').toLowerCase();
+      for (var k in WEATHER_ZH) {
+        if (key.indexOf(k) !== -1) return WEATHER_ZH[k];
+      }
+      return en || '';
+    }
+    var weatherEl = document.getElementById('infoWeather');
+    fetch('https://wttr.in/?format=j1&lang=zh')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var c = d && d.current_condition && d.current_condition[0];
+        if (c) {
+          weatherEl.textContent = zhWeather(c.weatherDesc[0].value) + ' ' + c.temp_C + '°C';
+        } else {
+          weatherEl.textContent = '天气获取失败';
+        }
+      })
+      .catch(function () { weatherEl.textContent = '天气获取失败'; });
+  })();
+</script>
