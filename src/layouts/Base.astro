@@ -63,6 +63,13 @@ const pageDesc = description ?? SITE_DESCRIPTION;
           ))}
           <a href="/about/">关于</a>
         </nav>
+        <div class="header-search">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="searchInput" placeholder="搜索文章…" autocomplete="off" spellcheck="false" aria-label="搜索文章" />
+        </div>
       </div>
     </header>
 
@@ -185,6 +192,16 @@ const pageDesc = description ?? SITE_DESCRIPTION;
         });
         document.addEventListener('keydown', function (e) {
           if (e.key === 'Escape') panel.classList.remove('open');
+        });
+
+        // ===== 搜索框：按 / 快速聚焦（搜索功能后续接入）=====
+        var searchInput = document.getElementById('searchInput');
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+          var tag = document.activeElement && document.activeElement.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+          e.preventDefault();
+          searchInput.focus();
         });
       })();
     </script>
