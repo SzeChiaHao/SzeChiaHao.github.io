@@ -893,11 +893,17 @@ a:hover {
   padding: 2rem 3rem 2.5rem;
 }
 
+.landing-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+}
+
 .landing-logo {
   display: flex;
   align-items: center;
   gap: 1.2rem;
-  margin-top: 1.5rem;
 }
 
 .landing-title-img {
@@ -925,14 +931,14 @@ a:hover {
 }
 
 .landing-col-left {
-  border-left: 4px solid var(--accent);
-  padding-left: 1.8rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
 
 .landing-info {
+  border-left: 4px solid var(--accent);
+  padding-left: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -964,15 +970,12 @@ a:hover {
 }
 
 .landing-col-right {
-  border-left: 4px solid var(--accent);
-  padding-left: 1.8rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .landing-about {
-  align-self: flex-start;
   padding: 0.9rem 1.6rem;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
@@ -991,9 +994,10 @@ a:hover {
 }
 
 .landing-update {
+  border-left: 4px solid var(--accent);
+  padding-left: 1.5rem;
   width: 100%;
   max-width: 30rem;
-  align-self: flex-start;
 }
 
 .landing-update-title {
