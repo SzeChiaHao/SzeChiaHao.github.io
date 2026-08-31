@@ -98,6 +98,15 @@ const title = '搜索';
     }
 
     function loadAll(q) {
+      // 开发模式：没有 Pagefind 索引，用本地 glob 搜索降级
+      if (import.meta.env.DEV) {
+        import('../scripts/devSearch.js').then(function (m) {
+          allResults = m.devSearch(q);
+          currentPage = 1;
+          render();
+        });
+        return;
+      }
       var pfUrl = '/pagefind/pagefind.js';
       import(pfUrl)
         .then(function (m) { return m.search(q); })
