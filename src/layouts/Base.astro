@@ -22,6 +22,9 @@ const pageDesc = description ?? SITE_DESCRIPTION;
     <meta name="description" content={pageDesc} />
     <meta name="generator" content={Astro.generator} />
     <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
     <script is:inline>
       // 首帧前确定主题与磨砂玻璃参数，避免闪烁
