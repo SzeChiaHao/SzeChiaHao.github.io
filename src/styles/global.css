@@ -230,13 +230,20 @@ a:hover {
   color: var(--text-2);
   font-size: 1.05rem;
   cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease, transform 0.25s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.icon-btn svg {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .icon-btn:hover {
   color: var(--text);
   border-color: var(--muted);
-  transform: rotate(45deg);
+}
+
+.icon-btn:hover svg {
+  transform: rotate(360deg);
 }
 
 /* ============ 首页 ============ */
