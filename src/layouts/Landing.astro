@@ -45,20 +45,9 @@ const pageDesc = description ?? SITE_DESCRIPTION;
       @media (prefers-reduced-motion:reduce){#loader-wrapper{display:none}}
     </style>
     <script is:inline>
-      // 首帧前确定主题，避免闪烁
+      // 首页固定深色主题（背景图为暗色，浅色文字更协调）
       (function () {
-        function read(key, def) {
-          try {
-            var v = localStorage.getItem(key);
-            return v === null ? def : v;
-          } catch (e) {
-            return def;
-          }
-        }
-        var pref = read('theme', 'auto');
-        var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = pref === 'light' || pref === 'dark' ? pref : sysDark ? 'dark' : 'light';
-        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.theme = 'dark';
       })();
     </script>
   </head>
