@@ -39,8 +39,8 @@ const pageDesc = description ?? SITE_DESCRIPTION;
         var theme = pref === 'light' || pref === 'dark' ? pref : sysDark ? 'dark' : 'light';
         document.documentElement.dataset.theme = theme;
 
-        var opacity = parseInt(read('glassOpacity', '55'), 10);
-        var blur = parseInt(read('glassBlur', '14'), 10);
+        var opacity = parseInt(read('glassOpacity', '32'), 10);
+        var blur = parseInt(read('glassBlur', '9'), 10);
         var style = document.documentElement.style;
         style.setProperty('--glass-opacity', String(opacity / 100));
         style.setProperty('--glass-blur', blur + 'px');
@@ -81,17 +81,17 @@ const pageDesc = description ?? SITE_DESCRIPTION;
       <div class="setting-group">
         <div class="setting-label">
           磨砂玻璃不透明度
-          <span class="setting-val" id="opacityVal">55%</span>
+          <span class="setting-val" id="opacityVal">32%</span>
         </div>
-        <input type="range" id="glassOpacity" min="0" max="100" step="1" value="55" />
+        <input type="range" id="glassOpacity" min="0" max="100" step="1" value="32" />
       </div>
 
       <div class="setting-group">
         <div class="setting-label">
           磨砂玻璃模糊度
-          <span class="setting-val" id="blurVal">14px</span>
+          <span class="setting-val" id="blurVal">9px</span>
         </div>
-        <input type="range" id="glassBlur" min="0" max="30" step="1" value="14" />
+        <input type="range" id="glassBlur" min="0" max="30" step="1" value="9" />
       </div>
     </div>
 
@@ -159,8 +159,8 @@ const pageDesc = description ?? SITE_DESCRIPTION;
           opacityVal.textContent = opacitySlider.value + '%';
           blurVal.textContent = blurSlider.value + 'px';
         }
-        opacitySlider.value = read('glassOpacity', '55');
-        blurSlider.value = read('glassBlur', '14');
+        opacitySlider.value = read('glassOpacity', '32');
+        blurSlider.value = read('glassBlur', '9');
         opacitySlider.addEventListener('input', function () {
           write('glassOpacity', opacitySlider.value);
           applyGlass();
