@@ -98,7 +98,6 @@ a:hover {
   border-bottom: 1px solid var(--glass-border);
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 
 .site-header .container {
@@ -156,7 +155,6 @@ a:hover {
   border-radius: 999px;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   color: var(--text-2);
   font-size: 1.05rem;
   cursor: pointer;
@@ -213,7 +211,6 @@ a:hover {
   padding: 1.1rem 1.25rem;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   color: var(--text);
@@ -344,7 +341,6 @@ a:hover {
     padding: 1rem 1.25rem;
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
     box-shadow: var(--glass-shadow);
@@ -404,7 +400,6 @@ a:hover {
   padding: 1.25rem 1.4rem;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   box-shadow: var(--glass-shadow);
