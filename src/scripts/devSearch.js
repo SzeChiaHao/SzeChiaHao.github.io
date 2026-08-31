@@ -14,12 +14,13 @@ const postsRaw = import.meta.glob('/src/content/posts/*.md', {
 
 function parse(raw) {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-  if (!m) return { title: '(无标题)', body: raw };
+  if (!m) return { title: '(无标题)', body: raw, fm: '' };
   const fm = m[1];
   const titleMatch = fm.match(/^title:\s*["']?([^"'\n]+)/m);
   return {
     title: titleMatch ? titleMatch[1].trim() : '(无标题)',
     body: m[2] || '',
+    fm,
   };
 }
 
@@ -27,8 +28,10 @@ export function devSearch(query) {
   const q = String(query || '').toLowerCase();
   const results = [];
   for (const [path, raw] of Object.entries(postsRaw)) {
-    const { title, body } = parse(raw);
-    if (title.toLowerCase().includes(q) || body.toLowerCase().includes(q)) {
+    const { title, body, fm } = parse(raw);
+    // 标题 + frontmatter（含 tags、description）+ 正文一起纳入匹配范围
+    const haystack = (title + '\n' + fm + '\n' + body).toLowerCase();
+    if (haystack.includes(q)) {
       const slug = path.split('/').pop().replace(/\.md$/, '');
       results.push({ url: '/posts/' + slug + '/', title, excerpt: '' });
     }
