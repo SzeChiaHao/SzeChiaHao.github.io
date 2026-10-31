@@ -127,22 +127,59 @@ a {
   padding: 0 1.25rem;
 }
 
-/* ============ 顶部导航 ============ */
+/* ============ 顶部导航（磨砂玻璃） ============ */
+/*
+ * 注意：backdrop-filter 只能模糊元素"背后"的内容。sticky 的 header 背后只有
+ * body 上近似纯色、静止的 --page-bg，滚动的文章永远进不了它的采样区域，
+ * 所以直接给 header 加 backdrop-filter 时，滑块调了也几乎看不出变化。
+ * 正确做法：header 保持透明，由内部伪元素 .header-glass 做 absolute 铺满 +
+ * fixed 定位——fixed 元素的"背后"正是随页面滚动的正文，模糊才有真实效果。
+ */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 90;
-  border-bottom: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   /* 刘海屏：内容避开状态栏 */
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* 低端设备降级：关闭模糊，保住滚动帧率 */
+.header-glass {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: clip;
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+}
+
+.header-glass::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+/* 不支持 backdrop-filter 的浏览器：回退为不透明底色，保证可读性 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header-glass,
+  .header-glass::before {
+    background: var(--bg-elevated);
+  }
+}
+
+/* 用户要求降低透明度时：关闭模糊，但保留滑块的半透明底色调节 */
 @media (prefers-reduced-transparency: reduce) {
-  .site-header,
+  .header-glass::before {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .header-search input,
   .icon-btn,
   .post-item a,
