@@ -19,7 +19,8 @@ const isHome = Astro.url.pathname === '/';
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="format-detection" content="telephone=no" />
     <meta name="description" content={pageDesc} />
     <meta name="generator" content={Astro.generator} />
     <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
@@ -27,16 +28,18 @@ const isHome = Astro.url.pathname === '/';
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
+    <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1b25" media="(prefers-color-scheme: dark)" />
     <style is:inline>
       /* 全屏加载遮罩：双扇门滑出（首帧内联，避免闪烁） */
       #loader-wrapper{position:fixed;inset:0;z-index:99999;overflow:hidden}
       #loader-wrapper .loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-      #loader-wrapper .loader-circle{position:relative;width:150px;height:150px;border-radius:50%;border:3px solid transparent;border-top-color:#818cf8;animation:lspin 1.8s linear infinite;z-index:2}
+      #loader-wrapper .loader-circle{position:relative;width:min(150px,34vw);height:min(150px,34vw);border-radius:50%;border:3px solid transparent;border-top-color:#818cf8;animation:lspin 1.8s linear infinite;z-index:2}
       #loader-wrapper .loader-circle::before{content:"";position:absolute;inset:5px;border-radius:50%;border:3px solid transparent;border-top-color:#a78bfa;animation:lspin-r .6s linear infinite}
       #loader-wrapper .loader-circle::after{content:"";position:absolute;inset:15px;border-radius:50%;border:3px solid transparent;border-top-color:#6366f1;animation:lspin 1s linear infinite}
-      #loader-wrapper .loader-text{display:flex;flex-direction:column;align-items:center;color:#e7e7ea;z-index:2;margin-top:40px;font-size:22px;letter-spacing:.02em}
+      #loader-wrapper .loader-text{display:flex;flex-direction:column;align-items:center;color:var(--text,#e7e7ea);z-index:2;margin-top:clamp(20px,6vh,40px);font-size:clamp(17px,4.5vw,22px);letter-spacing:.02em}
       #loader-wrapper .loader-text .tip{margin-top:8px;font-size:16px;opacity:.6}
-      #loader-wrapper .loader-section{position:fixed;top:0;width:51%;height:100%;background:#1a1b25;z-index:1}
+      #loader-wrapper .loader-section{position:fixed;top:0;width:51%;height:100%;background:var(--bg,#1a1b25);z-index:1}
       #loader-wrapper .loader-section.section-left{left:0}
       #loader-wrapper .loader-section.section-right{right:0}
       #loader-wrapper.loaded{visibility:hidden;transform:translateY(-100%);transition:transform .4s .9s ease-out,visibility .4s .9s ease-out}
@@ -46,6 +49,7 @@ const isHome = Astro.url.pathname === '/';
       @keyframes lspin{to{transform:rotate(360deg)}}
       @keyframes lspin-r{to{transform:rotate(-360deg)}}
       @media (prefers-reduced-motion:reduce){#loader-wrapper{display:none}}
+      @media (max-width:640px){#loader-wrapper .loader-text .tip{font-size:14px}}
     </style>
     <script is:inline>
       // 首帧前确定主题与磨砂玻璃参数，避免闪烁
@@ -204,6 +208,10 @@ const isHome = Astro.url.pathname === '/';
         function applyTheme(pref) {
           var theme = pref === 'light' || pref === 'dark' ? pref : sysDark() ? 'dark' : 'light';
           root.dataset.theme = theme;
+          // 同步状态栏颜色（Android Chrome / iOS Safari）
+          var tc = document.querySelector('meta[name="theme-color"]:not([media])') ||
+                   document.querySelector('meta[name="theme-color"]');
+          if (tc) tc.setAttribute('content', theme === 'dark' ? '#1a1b25' : '#f5f6f8');
           window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: theme } }));
           document.querySelectorAll('[data-theme-choice]').forEach(function (b) {
             b.classList.toggle('active', b.getAttribute('data-theme-choice') === pref);
