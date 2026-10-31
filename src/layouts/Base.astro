@@ -31,6 +31,46 @@ const isActive = (href: string) =>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!--
+      中文衷线字体：思源宋体 Noto Serif SC。
+      手机（Android / 国产 ROM）根本没有自带的中文衷线字，不加载就会回退成黑体；
+      这里走 Google Fonts 的分片机制（unicode-range），浏览器只下载正文里实际
+      用到的字块，一篇文章通常一两百 KB。加载时用 media=print 避开渲染阻塞。
+    -->
+    <link rel="preconnect" href="https://fonts.loli.net" crossorigin />
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
+    <link
+      id="cjk-serif"
+      rel="stylesheet"
+      href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@400;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <script is:inline>
+      (function () {
+        // 镜像挂了就依次退到下一个：loli → fonts.googleapis.cn → fonts.googleapis.com
+        var queue = [
+          'https://fonts.googleapis.cn/css2?family=Noto+Serif+SC:wght@400;700&display=swap',
+          'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap',
+        ];
+        function attach(link) {
+          link.addEventListener('error', function () {
+            if (!queue.length) return;
+            var next = document.createElement('link');
+            next.rel = 'stylesheet';
+            next.href = queue.shift();
+            next.media = 'print';
+            next.onload = function () {
+              next.media = 'all';
+            };
+            attach(next);
+            document.head.appendChild(next);
+          });
+        }
+        var el = document.getElementById('cjk-serif');
+        if (el) attach(el);
+      })();
+    </script>
     <title>{pageTitle}</title>
     <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1b25" media="(prefers-color-scheme: dark)" />

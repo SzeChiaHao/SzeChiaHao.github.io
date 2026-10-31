@@ -893,6 +893,7 @@ a {
 
 /* ============ 正文排版（衬线，学术感） ============ */
 .prose {
+  /* 汉字用 Base.astro 里加载的思源宋体 Noto Serif SC；后面几个是网络字体没到位时的本机回退 */
   font-family: Georgia, 'Times New Roman', 'Noto Serif SC', 'Source Han Serif SC',
     'Songti SC', SimSun, serif;
   font-size: 1.06rem;
