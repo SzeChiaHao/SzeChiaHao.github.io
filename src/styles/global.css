@@ -1527,3 +1527,73 @@ a {
     font-size: 0.95rem;
   }
 }
+
+/* ============ 超短屏 / 横屏手机（高度受限）专用适配 ============ */
+/* 例如：iPhone 横向、折叠屏外屏、车机/小窗模式等视口高度 <= 500px 的场景 */
+@media (max-height: 500px) {
+  /* Hero 区压缩，避免首屏被完全占满 */
+  .hero {
+    padding: 1.25rem 0 1rem;
+  }
+  .site-title {
+    font-size: clamp(1.4rem, 4.5vh, 1.9rem);
+  }
+  .site-subtitle {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  .post-list {
+    gap: 0.6rem;
+  }
+  .post-item a {
+    padding: 0.8rem 1rem;
+  }
+
+  /* TOC 抽屉改为滚动跟随：不再撑满全屏，留出正文视野 */
+  .toc-sidebar {
+    top: auto;
+    bottom: 1rem;
+    height: auto;
+    max-height: calc(100dvh - 2rem);
+    max-height: calc(100svh - 2rem);
+    width: min(60vw, 16rem);
+    border-radius: var(--radius);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  /* 桌面端 sticky 目录在矮屏下限制高度并允许内部滚动 */
+  @media (min-width: 1100px) {
+    .toc-sidebar {
+      top: 4.5rem;
+      max-height: calc(100dvh - 5.5rem);
+      max-height: calc(100svh - 5.5rem);
+    }
+  }
+
+  /* 设置面板同样收缩，保证不超出可视高度 */
+  .settings-panel {
+    max-height: calc(100dvh - 5.5rem);
+    max-height: calc(100svh - 5.5rem);
+    padding: 0.9rem 1.1rem;
+  }
+
+  /* Landing 页减少纵向留白 */
+  .landing {
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* 极矮视口（<= 380px，如 Apple Watch 类设备或分屏小窗）进一步降级为紧凑模式 */
+@media (max-height: 380px) {
+  .hero {
+    padding: 0.75rem 0 0.5rem;
+  }
+  .site-subtitle {
+    display: none;
+  }
+  .post-item a {
+    padding: 0.6rem 0.9rem;
+  }
+}
