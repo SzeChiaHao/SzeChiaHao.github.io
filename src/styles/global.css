@@ -161,15 +161,17 @@ a {
   width: 100vw;
   height: calc(100vh + env(safe-area-inset-top, 0px));
   height: calc(100dvh + env(safe-area-inset-top, 0px));
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  /* 关键：这里必须保持完全透明。半透明的着色层由外层 .header-glass 自己绘制。
+   * 如果把 --glass-bg 也画在这一层，它会被重复叠加两次，
+   * 导致整个页面（尤其暗色主题）看起来蒙了一层灰、发暗。 */
+  background: transparent;
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
 }
 
 /* 不支持 backdrop-filter 的浏览器：回退为不透明底色，保证可读性 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .header-glass,
-  .header-glass::before {
+  .header-glass {
     background: var(--bg-elevated);
   }
 }
