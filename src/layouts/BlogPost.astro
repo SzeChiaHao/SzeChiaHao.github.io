@@ -124,28 +124,72 @@ const rt = readingTime(post.body);
 </script>
 
 <script>
-  // 移动端目录抽屉：开关、点击遮罩/链接/关闭按钮时收起
+  // 移动端目录抽屉：开关、背景滚动锁定、下滑手势关闭
   (function () {
     var toggle = document.getElementById('tocToggle');
     var sidebar = document.getElementById('tocSidebar');
     var backdrop = document.getElementById('tocBackdrop');
     var close = document.getElementById('tocClose');
     if (!toggle || !sidebar) return;
+
+    var scrollY = 0;
+    function lockScroll() {
+      scrollY = window.scrollY;
+      document.body.classList.add('no-scroll');
+      document.body.style.top = '-' + scrollY + 'px';
+    }
+    function unlockScroll() {
+      document.body.classList.remove('no-scroll');
+      document.body.style.top = '';
+      window.scrollTo(0, scrollY);
+    }
+
     function openToc() {
       sidebar.classList.add('open');
       if (backdrop) backdrop.classList.add('open');
       toggle.classList.add('hidden');
+      sidebar.setAttribute('aria-hidden', 'false');
+      lockScroll();
     }
     function closeToc() {
+      if (!sidebar.classList.contains('open')) return;
       sidebar.classList.remove('open');
       if (backdrop) backdrop.classList.remove('open');
       toggle.classList.remove('hidden');
+      sidebar.setAttribute('aria-hidden', 'true');
+      unlockScroll();
     }
     toggle.addEventListener('click', openToc);
     if (close) close.addEventListener('click', closeToc);
     if (backdrop) backdrop.addEventListener('click', closeToc);
     sidebar.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', closeToc);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeToc();
+    });
+
+    // 下滑手势关闭抽屉（类似原生 App）
+    var touchStartY = 0;
+    var touching = false;
+    sidebar.addEventListener('touchstart', function (e) {
+      // 仅当抽屉内容已滚到顶部时才允许下滑关闭，避免与内部滚动冲突
+      touching = sidebar.scrollTop <= 0 && e.touches.length === 1;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    sidebar.addEventListener('touchmove', function (e) {
+      if (!touching) return;
+      var dy = e.touches[0].clientY - touchStartY;
+      if (dy > 0) {
+        sidebar.style.transform = 'translateX(' + Math.min(dy * 0.4, 120) + 'px)';
+      }
+    }, { passive: true });
+    sidebar.addEventListener('touchend', function (e) {
+      if (!touching) return;
+      touching = false;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      sidebar.style.transform = '';
+      if (dy > 80) closeToc();
     });
   })();
 </script>
