@@ -13,6 +13,10 @@ const { title, description, wide = false } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 const pageDesc = description ?? SITE_DESCRIPTION;
 const isHome = Astro.url.pathname === '/';
+// 当前页（解码后，含中文分类路径），用于导航高亮
+const currentPath = decodeURIComponent(Astro.url.pathname);
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
 <!doctype html>
@@ -75,7 +79,7 @@ const isHome = Astro.url.pathname === '/';
       })();
     </script>
   </head>
-  <body>
+  <body class="site-body">
     {
       isHome && (
         <>
@@ -116,10 +120,6 @@ const isHome = Astro.url.pathname === '/';
       )
     }
     <header class="site-header" data-pagefind-ignore>
-      <!-- 磨砂玻璃层：外壳裁剪 + 不透明内芯采样滚动内容，滑块调节实时生效 -->
-      <div class="header-glass" aria-hidden="true">
-        <div class="header-glass-core"></div>
-      </div>
       <div class="container">
         <div class="header-left">
           <button class="icon-btn" id="settingsBtn" type="button" aria-label="设置" title="设置">
@@ -131,11 +131,17 @@ const isHome = Astro.url.pathname === '/';
           <a class="site-logo" href="/">{SITE_TITLE}</a>
         </div>
         <nav class="site-nav">
-          <a href="/">首页</a>
+          <a href="/" class={isActive('/') ? 'active' : undefined} aria-current={isActive('/') ? 'page' : undefined}>首页</a>
           {CATEGORIES.map((c) => (
-            <a href={`/tags/${c}/`}>{c}</a>
+            <a
+              href={`/tags/${c}/`}
+              class={isActive(`/tags/${c}/`) ? 'active' : undefined}
+              aria-current={isActive(`/tags/${c}/`) ? 'page' : undefined}
+            >
+              {c}
+            </a>
           ))}
-          <a href="/about/">关于</a>
+          <a href="/about/" class={isActive('/about/') ? 'active' : undefined} aria-current={isActive('/about/') ? 'page' : undefined}>关于</a>
         </nav>
         <div class="header-search">
           <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -144,6 +150,13 @@ const isHome = Astro.url.pathname === '/';
           </svg>
           <input type="search" id="searchInput" placeholder="搜索文章…" autocomplete="off" spellcheck="false" aria-label="搜索文章" />
           <div class="search-panel" id="searchPanel"></div>
+          <!-- 手机端：输入框收起，改为图标，点开进独立搜索页 -->
+          <a class="search-link" href="/search/" aria-label="搜索" title="搜索">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </a>
         </div>
       </div>
     </header>
