@@ -129,11 +129,12 @@ a {
 
 /* ============ 顶部导航（磨砂玻璃） ============ */
 /*
- * 注意：backdrop-filter 只能模糊元素"背后"的内容。sticky 的 header 背后只有
- * body 上近似纯色、静止的 --page-bg，滚动的文章永远进不了它的采样区域，
- * 所以直接给 header 加 backdrop-filter 时，滑块调了也几乎看不出变化。
- * 正确做法：header 保持透明，由内部伪元素 .header-glass 做 absolute 铺满 +
- * fixed 定位——fixed 元素的"背后"正是随页面滚动的正文，模糊才有真实效果。
+ * 结构：.header-glass（裁剪外壳，absolute 铺满 sticky header）
+ *      └ .header-glass-core（磨砂内芯，不透明底 + backdrop-filter）
+ * backdrop-filter 会把元素"自身背景 + 背后内容"一起模糊采样。因此内芯必须
+ * 绘制与 body 相同的静止不透明背景：滚过的正文进入采样区域被真正模糊，
+ * 滑块调模糊度/不透明度时顶栏实时变化；而 header 之外没有任何层去模糊
+ * 页面主体，全站不会发暗、不会被整页模糊。
  */
 .site-header {
   position: sticky;
@@ -150,35 +151,56 @@ a {
   pointer-events: none;
   overflow: clip;
   border-bottom: 1px solid var(--glass-border);
-  background: var(--glass-bg);
 }
 
-.header-glass::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: calc(100vh + env(safe-area-inset-top, 0px));
-  height: calc(100dvh + env(safe-area-inset-top, 0px));
-  /* 关键：这里必须保持完全透明。半透明的着色层由外层 .header-glass 自己绘制。
-   * 如果把 --glass-bg 也画在这一层，它会被重复叠加两次，
-   * 导致整个页面（尤其暗色主题）看起来蒙了一层灰、发暗。 */
-  background: transparent;
+/*
+ * 注意：伪元素的 fixed 定位在 Safari / Chrome 的 sticky 祖先下会失效
+ * （退化为相对 header 定位），导致模糊只覆盖到设置面板等弹窗自身，
+ * 顶栏反而看不到效果。因此改用真实的 <div class="header-glass-core"> 元素。
+ *
+ * core 必须是"不透明"的：backdrop-filter 会把元素自身的背景一并模糊采样，
+ * 若 core 用半透明底色，透过它看到的 body 背景会在 header 区域被二次模糊，
+ * 形成一块可见的"雾区"，且调节滑块时看不出变化。让 core 绘制与 body
+ * 完全相同的背景（--page-bg，近似纯色、静止），模糊量全部来自 core 背后
+ * 滚过的正文内容——滚动时文字在顶栏内变糊、停下又复原，滑块实时生效。
+ */
+.header-glass-core {
+  position: absolute;
+  inset: 0;
+  /* 底边线由外层 .header-glass 绘制，这里不重复 */
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1000px 600px at 10% -6%, #6366f121, transparent 60%),
+    radial-gradient(900px 560px at 94% 8%, #a855f71a, transparent 58%),
+    radial-gradient(760px 480px at 50% 112%, #38bdf812, transparent 55%);
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
 }
 
+:root[data-theme='dark'] .header-glass-core {
+  background-image:
+    radial-gradient(1000px 600px at 12% -6%, #6366f14d, transparent 60%),
+    radial-gradient(900px 560px at 92% 8%, #a855f740, transparent 58%),
+    radial-gradient(760px 480px at 50% 112%, #38bdf81f, transparent 55%);
+}
+
+/* “不透明度”滑块：控制顶栏着色的深浅（0 = 完全透明玻璃，100 = 实心面板）。
+ * core 保持不透明以正确采样模糊，着色强度通过整层透明度实现。 */
+.header-glass {
+  opacity: calc(0.4 + var(--glass-opacity) * 0.6);
+}
+
 /* 不支持 backdrop-filter 的浏览器：回退为不透明底色，保证可读性 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .header-glass {
-    background: var(--bg-elevated);
+  .header-glass-core {
+    background-color: var(--bg-elevated);
+    background-image: none;
   }
 }
 
 /* 用户要求降低透明度时：关闭模糊，但保留滑块的半透明底色调节 */
 @media (prefers-reduced-transparency: reduce) {
-  .header-glass::before {
+  .header-glass-core {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

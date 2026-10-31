@@ -116,8 +116,10 @@ const isHome = Astro.url.pathname === '/';
       )
     }
     <header class="site-header" data-pagefind-ignore>
-      <!-- 磨砂玻璃层：内部 fixed 伪元素采样滚动内容，滑块调节才可见 -->
-      <div class="header-glass" aria-hidden="true"></div>
+      <!-- 磨砂玻璃层：外壳裁剪 + 不透明内芯采样滚动内容，滑块调节实时生效 -->
+      <div class="header-glass" aria-hidden="true">
+        <div class="header-glass-core"></div>
+      </div>
       <div class="container">
         <div class="header-left">
           <button class="icon-btn" id="settingsBtn" type="button" aria-label="设置" title="设置">
